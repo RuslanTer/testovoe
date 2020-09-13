@@ -1,87 +1,95 @@
 import java.io.File
 import java.nio.file.Paths;
+import kotlin.math.ceil
 
-class code{
-    var mass = 1
-}
 
-var ascii_table: MutableMap<Int, Char> = mutableMapOf()
 fun main() {
-//    val asciiMapFile = File("C:\\Users\\akofi\\IdeaProjects\\testovoe\\src\\ascii.txt").readLines()
-//    for (n in asciiMapFile) {
-//        ascii_table.put(n.split("\t")[0].toInt(), n.split("\t")[1].toCharArray()[0])
-//    }
-//    println(ascii_table)
-    val data =  File("C:\\Users\\akofi\\IdeaProjects\\testovoe\\src\\code.txt").readLines()
-    var buff: MutableList<MutableList<Int>> = mutableListOf()
-    var buff2: MutableList<Int> = mutableListOf()
+    val path = System.getProperty("user.dir")
+    println("$path\\code.txt")
+    val data = File("$path\\src\\code.txt").readLines()
+    var arrayCodes: MutableList<MutableList<Int>> = mutableListOf()
+    var lineCodes: MutableList<Int> = mutableListOf()
     for (n in data) {
-        for (symbol in n.split(" ")){
-            buff2.add(symbol.toInt())
+        for (symbol in n.split(" ")) {
+            lineCodes.add(symbol.toInt())
         }
-        if (buff2.size>2){
-            buff.add(buff2)
-            buff2 = mutableListOf()
+        if (lineCodes.size > 2) {
+            arrayCodes.add(lineCodes)
+            lineCodes = mutableListOf()
         }
     }
-
-//    var symbolsList: MutableList<MutableList<Char>> = mutableListOf()
-//    var symbolsListBuff: MutableList<Char> = mutableListOf()
-//    for (nums in buff){
-//
-//        for (num in nums.sorted()){
-//            if (num!=null){
-//                    ascii_table[num+nums[0]]?.let { symbolsListBuff.add(it) }
-//            }
-//
-//        }
-//        symbolsList.add(symbolsListBuff)
-//        symbolsListBuff = mutableListOf()
-//
-//    }
-//    for (symbols in symbolsList){
-//        println(symbols)
-//    }
-
-
-    for (list in buff) {
-
-
-//        println(list)
-        var rot = list.removeAt(0)
-        println(list.sorted()[rot].toChar())
-//        for (el in list){
-//            print((rot+el).toChar())
-//        }
-//        println()
-        //println(list.sorted())
-
-//       for (sym in binary_search(list.sorted().toMutableList(), 9)){
-//           println(ascii_table[sym+rot])
-//       }
-        //var count = list.count { it==216}
-        //print((count+rot).toChar())
-//        println((count).toChar())
+    var cipher = "тъясвямы баъгь иъгэс бедн ь адуцде"
+    println(сaesarDecoder(cipher, 15))
+    for (code in arrayCodes){
+        var aloneNumber = code.removeAt(0)
+        var sortedCode: MutableList<Int> = bubbleSort(code)
+        var searchValue = sortedCode[aloneNumber]
+        print(sortedCode[binarySearch(sortedCode, searchValue)].toChar())
     }
+
 }
 
-fun reload_search(list: MutableList<Int>, index: Int) {
-
-
-
+//for lower case only
+fun сaesarDecoder(text: String, rot: Int):String {
+    var result: String = ""
+    for (symbol in text){
+        if (symbol.toInt()<=1103 && symbol.toInt()+rot%33-1>=1103){ // for go around 1072..1103
+            if (1071 - ( 1103 - symbol.toInt() -  rot%33)>1077){ // for char "ё" (1077 = "e")
+                result += (1071 - 1 - ( 1103 - symbol.toInt() -  rot%33)).toChar()
+            }
+            else {
+                result += (1071 - ( 1103 - symbol.toInt() -  rot%33)).toChar()
+            }
+        }
+        else{
+            if (symbol.toInt()<=1077 && (symbol.toInt()+rot%33)>1077) {// for char "ё" (1077 = "e")
+                result += ((symbol.toInt()+rot%33-1)) .toChar()
+            }
+            else {
+                result += (symbol.toInt()+rot%33) .toChar()
+            }
+        }
     }
-
-fun  binary_search(list: MutableList<Int>, index: Int): MutableList<Int>{
-    //print(list)
-//    print(index)
-//    println()
-    if (list.size<=2)
-        return list
-    if (list[index]<216){
-        return binary_search(list.slice(index+1..list.size-1).toMutableList(),(list.slice(index+1..list.size-1).size-1)/2 )
-    }else{
-        return binary_search(list.slice(0..index-1).toMutableList(),list.slice(0..index-1).size/2 )
-    }
-
-
+    return result
 }
+
+fun <T> MutableList<T>.swap(index1: Int, index2: Int) {
+    val tmp = this[index1] // 'this' corresponds to the list
+    this[index1] = this[index2]
+    this[index2] = tmp
+}
+
+fun bubbleSort(array: MutableList<Int>): MutableList<Int>{
+    var isSorted = false
+    for (step in 0..array.size-2){
+        if (isSorted){return array}
+        isSorted = true
+        for (i in 0..array.size-2){
+            if (array[i]>array[i+1]){
+                isSorted=false
+                array.swap(i, i+1)
+            }
+        }
+    }
+    return array
+}
+
+fun binarySearch(array: MutableList<Int>, value: Int): Int{
+    var l = 0
+    var r = array.size - 1
+    while (l <= r){
+        val m: Int = (l + r ) / 2
+        if (array[m] == value)
+            return m
+        if (array[m] < value){
+            l = m + 1
+        }
+        else {
+            r = m - 1
+        }
+    }
+    return -1
+}
+
+
+
