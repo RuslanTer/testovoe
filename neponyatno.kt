@@ -1,11 +1,12 @@
 import java.io.File
 import java.nio.file.Paths;
+import kotlin.math.abs
 import kotlin.math.ceil
 
+var alphabet: String = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя"
 
 fun main() {
     val path = System.getProperty("user.dir")
-    println("$path\\code.txt")
     val data = File("$path\\src\\code.txt").readLines()
     var arrayCodes: MutableList<MutableList<Int>> = mutableListOf()
     var lineCodes: MutableList<Int> = mutableListOf()
@@ -18,37 +19,30 @@ fun main() {
             lineCodes = mutableListOf()
         }
     }
+    println(bubbleSort(mutableListOf(2,1,3,4,5,6)))
     var cipher = "тъясвямы баъгь иъгэс бедн ь адуцде"
-    println(сaesarDecoder(cipher, 15))
+    println(сaesarEncryption(cipher, 213, alphabet))
     for (code in arrayCodes){
         var aloneNumber = code.removeAt(0)
         var sortedCode: MutableList<Int> = bubbleSort(code)
         var searchValue = sortedCode[aloneNumber]
-        print(sortedCode[binarySearch(sortedCode, searchValue)].toChar())
+        print(sortedCode[binarySearch(sortedCode, searchValue, 0, sortedCode.size-1)].toChar())
     }
 
 }
 
 //for lower case only
-fun сaesarDecoder(text: String, rot: Int):String {
+fun сaesarEncryption(text: String, rot: Int, alpha: String):String {
+    val n = alpha.length
     var result: String = ""
     for (symbol in text){
-        if (symbol.toInt()<=1103 && symbol.toInt()+rot%33-1>=1103){ // for go around 1072..1103
-            if (1071 - ( 1103 - symbol.toInt() -  rot%33)>1077){ // for char "ё" (1077 = "e")
-                result += (1071 - 1 - ( 1103 - symbol.toInt() -  rot%33)).toChar()
-            }
-            else {
-                result += (1071 - ( 1103 - symbol.toInt() -  rot%33)).toChar()
-            }
+        if (symbol==' '){ //for space
+            result += ' '
+            continue
         }
-        else{
-            if (symbol.toInt()<=1077 && (symbol.toInt()+rot%33)>1077) {// for char "ё" (1077 = "e")
-                result += ((symbol.toInt()+rot%33-1)) .toChar()
-            }
-            else {
-                result += (symbol.toInt()+rot%33) .toChar()
-            }
-        }
+        var y = alpha.indexOf(symbol)
+        var x = abs(y + rot) % n
+        result += alpha[x]
     }
     return result
 }
@@ -64,7 +58,7 @@ fun bubbleSort(array: MutableList<Int>): MutableList<Int>{
     for (step in 0..array.size-2){
         if (isSorted){return array}
         isSorted = true
-        for (i in 0..array.size-2){
+        for (i in 0..array.size-2-step){
             if (array[i]>array[i+1]){
                 isSorted=false
                 array.swap(i, i+1)
@@ -74,18 +68,16 @@ fun bubbleSort(array: MutableList<Int>): MutableList<Int>{
     return array
 }
 
-fun binarySearch(array: MutableList<Int>, value: Int): Int{
-    var l = 0
-    var r = array.size - 1
-    while (l <= r){
-        val m: Int = (l + r ) / 2
+fun binarySearch(array: MutableList<Int>, value: Int, l: Int, r: Int): Int{
+    if (r >= l){
+        val m: Int = l + (r - l ) / 2
         if (array[m] == value)
             return m
         if (array[m] < value){
-            l = m + 1
+            return binarySearch(array, value, m + 1, r)
         }
         else {
-            r = m - 1
+            return binarySearch(array, value, l,m - 1)
         }
     }
     return -1
