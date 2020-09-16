@@ -41,7 +41,7 @@ fun сaesarEncryption(text: String, rot: Int, alpha: String):String {
             continue
         }
         var y = alpha.indexOf(symbol)
-        var x = kotlin.math.abs(y + n-rot%n) % n
+        var x = (y + (n-rot%n)) % n
         result += alpha[x]
     }
     return result
