@@ -21,7 +21,7 @@ fun main() {
     }
     println(bubbleSort(mutableListOf(2,1,3,4,5,6)))
     var cipher = "тъясвямы баъгь иъгэс бедн ь адуцде"
-    println(сaesarEncryption(cipher, 213, alphabet))
+    println(сaesarEncryption(cipher, 216, alphabet))
     for (code in arrayCodes){
         var aloneNumber = code.removeAt(0)
         var sortedCode: MutableList<Int> = bubbleSort(code)
@@ -42,7 +42,6 @@ fun сaesarEncryption(text: String, rot: Int, alpha: String):String {
         }
         var y = alpha.indexOf(symbol)
         var x = kotlin.math.abs(y + n-rot%n) % n
-
         result += alpha[x]
     }
     return result
